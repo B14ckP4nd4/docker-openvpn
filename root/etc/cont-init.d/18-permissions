@@ -1,0 +1,28 @@
+#!/usr/bin/with-contenv bash
+
+chown -R abc:abc \
+	/config \
+	/config/cert \
+	/config/server \
+	/config/client \
+	/config/easy-rsa
+
+chown -R 755 \
+  /config/cert/crl.pem \
+  /config/cert/ca.crt \
+  /config/cert/server.crt \
+  /config/cert/server.key \
+  /config/cert/dh.pem \
+  /config/cert/tc.key \
+  /config/cert/crl.pem
+
+chown -R abc:abc \
+  /config/cert/crl.pem \
+  /config/cert/ca.crt \
+  /config/cert/server.crt \
+  /config/cert/server.key \
+  /config/cert/dh.pem \
+  /config/cert/tc.key \
+  /config/cert/crl.pem
+
+

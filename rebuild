@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+clear
+
+docker rmi $(docker images -q)
+docker rm -v $(docker ps -qa)
+
+rm -rf /home/ovpn
+mkdir -p /home/ovpn
+chown -R 755 /home/ovpn
+docker rm -f ovpn
+
+docker build \
+  --no-cache \
+  --pull \
+  -t b14ckp4nd\openvpn-as:latest . && \
+  docker create \
+  --name=ovpn \
+  --cap-add=NET_ADMIN \
+  -e PUID=1000 \
+  -e PGID=1000 \
+  -e TZ=Europe/Berlin \
+  -e port=1194 \
+  -e proto=udp \
+  -e INTERFACE=eth0 \
+  -p 1194:1194/udp \
+  -v /home/ovpn:/config \
+  --restart unless-stopped \
+  b14ckp4nd\openvpn-as:latest && \
+  docker start ovpn && \
+   docker logs ovpn -f

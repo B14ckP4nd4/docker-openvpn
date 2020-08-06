@@ -1,0 +1,6 @@
+#!/usr/bin/with-contenv bash
+
+if ! [ -x "$(command -v openvpn)" ]; then
+  apt-get update && \
+  apt-get install -y openvpn
+fi
