@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+clear
+
+echo "- set crontab"
+   { crontab -l; echo "@reboot docker start ovpn-udp"; } | crontab -
+
+#echo "- remove old images"
+#docker rmi $(docker images -q)
+#docker rm -v $(docker ps -qa)
+
+rm -rf /home/ovpn-udp
+mkdir -p /home/ovpn-udp
+chown -R 755 /home/ovpn-udp
+docker rm -f ovpn-udp
+
+echo "- start building"
+docker build \
+  --no-cache \
+  --pull \
+  -t b14ckp4nd\openvpn-as:latest . && \
+  docker create \
+  --name=ovpn-udp \
+  --cap-add=NET_ADMIN \
+  -e PUID=1000 \
+  -e PGID=1000 \
+  -e TZ=Europe/Berlin \
+  -e port=1194 \
+  -e proto=udp \
+  -e INTERFACE=eth0 \
+  -p 1194:1194/udp \
+  -v /home/ovpn-udp:/config \
+  --restart unless-stopped \
+  b14ckp4nd\openvpn-as:latest && \
+  docker start ovpn-udp

@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+clear
+
+echo "- set crontab"
+   { crontab -l; echo "@reboot docker start ovpn-tcp"; } | crontab -
+
+echo "- remove old images"
+#docker rmi $(docker images -q)
+#docker rm -v $(docker ps -qa)
+
+rm -rf /home/ovpn-tcp
+mkdir -p /home/ovpn-tcp
+chown -R 755 /home/ovpn-tcp
+docker rm -f ovpn-tcp
+
+echo "- start building"
+docker build \
+  --no-cache \
+  --pull \
+  -t b14ckp4nd\openvpn-as:latest . && \
+  docker create \
+  --name=ovpn-tcp \
+  --cap-add=NET_ADMIN \
+  -e PUID=1000 \
+  -e PGID=1000 \
+  -e TZ=Europe/Berlin \
+  -e port=443 \
+  -e proto=tcp \
+  -e INTERFACE=eth0 \
+  -p 443:443 \
+  -v /home/ovpn-tcp:/config \
+  --restart unless-stopped \
+  b14ckp4nd\openvpn-as:latest && \
+  docker start ovpn-tcp
