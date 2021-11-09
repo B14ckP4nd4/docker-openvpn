@@ -21,6 +21,7 @@ docker build \
   docker create \
   --name=ovpn-tcp \
   --cap-add=NET_ADMIN \
+  --network=opvn_network \
   -e PUID=1000 \
   -e PGID=1000 \
   -e TZ=Europe/Berlin \
