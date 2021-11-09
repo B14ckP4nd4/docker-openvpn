@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-clear
+# clear
 
 echo "- set crontab"
    { crontab -l; echo "@reboot docker start ovpn-tcp"; } | crontab -
